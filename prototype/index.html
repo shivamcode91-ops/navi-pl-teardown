@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navi PL — redesigned flow (prototype)</title>
+<style>
+:root{
+  --pp:#4b2a8f;--pp2:#6c4fd6;--pp3:#8b6ff0;--lav:#efeaff;--lav2:#e3d9ff;
+  --ink:#1c1430;--tx:#2b2440;--mut:#7b7391;--line:#ece8f5;--ok:#12a150;--bg:#0e0b18;
+  --card:#fff;--field:#f6f3fd;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:
+  radial-gradient(900px 500px at 82% -8%,#241a3f,#0e0b18) fixed;
+  color:#e7e2f5;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;gap:52px;flex-wrap:wrap;padding:34px}
+.stage{display:flex;align-items:center;gap:46px;flex-wrap:wrap;justify-content:center}
+
+/* annotation rail */
+.rail{max-width:330px}
+.rail .kick{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--pp3);font-weight:700;margin-bottom:8px}
+.rail h1{font-size:25px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:-.3px;color:#fff}
+.rail p{color:#b3aacb;font-size:14px;margin:0 0 18px}
+.anno{background:#191330;border:1px solid #2c2350;border-left:3px solid var(--pp2);border-radius:12px;padding:14px 15px;transition:.25s}
+.anno .t{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--pp3);font-weight:700;margin-bottom:5px}
+.anno .d{color:#d7d0ee;font-size:13.5px}
+.hint{margin-top:16px;font-size:12px;color:#6a6288}
+.restart{margin-top:14px;background:transparent;border:1px solid #3a2f63;color:#b9a7f0;padding:9px 16px;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600}
+.restart:hover{background:#191330}
+
+/* phone */
+.device{width:330px;height:700px;background:#0a0713;border-radius:44px;padding:11px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 2px #2a2350,inset 0 0 0 2px #000;flex:0 0 auto;position:relative}
+.notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:130px;height:26px;background:#0a0713;border-radius:0 0 18px 18px;z-index:20}
+.screen{position:relative;width:100%;height:100%;background:#fff;border-radius:34px;overflow:hidden;color:var(--tx)}
+.sbar{height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 26px;font-size:12px;font-weight:700;color:var(--ink);flex:0 0 auto}
+.sbar .r{display:flex;gap:5px;align-items:center;font-size:11px}
+
+/* screen system */
+.view{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;
+  transform:translateX(100%);opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.22,.61,.36,1),opacity .3s}
+.view.on{transform:translateX(0);opacity:1;pointer-events:auto}
+.view.prev{transform:translateX(-24%);opacity:0}
+.body{flex:1;overflow-y:auto;padding:8px 22px 20px}
+.body::-webkit-scrollbar{width:0}
+.appbar{display:flex;align-items:center;gap:12px;padding:6px 20px 2px}
+.appbar .bk{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--pp);cursor:pointer;font-size:19px}
+.brand{font-weight:800;color:var(--pp);letter-spacing:-.3px;font-size:18px}
+.prog{display:flex;gap:5px;padding:8px 22px 2px}
+.prog i{height:4px;border-radius:4px;background:var(--line);flex:1;transition:.3s}
+.prog i.done{background:var(--pp2)}
+
+h2{font-size:23px;line-height:1.18;margin:14px 0 6px;font-weight:800;letter-spacing:-.3px;color:var(--ink)}
+.lead{color:var(--mut);font-size:14px;margin:0 0 16px}
+.big{font-size:38px;font-weight:800;letter-spacing:-1px;color:var(--ink);margin:4px 0}
+.big .cur{font-size:24px;vertical-align:super;font-weight:700;margin-right:2px}
+.pill2{display:inline-flex;align-items:center;gap:6px;background:var(--lav);color:var(--pp);font-weight:700;font-size:12px;padding:6px 12px;border-radius:20px;margin:3px 6px 3px 0}
+.field{background:var(--field);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:9px 0;display:flex;align-items:center;gap:10px}
+.field .lb{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.field .vl{font-size:15px;font-weight:700;color:var(--ink)}
+.field.locked{background:#f2fbf5;border-color:#cdeed8}
+.field .grow{flex:1}
+.chk{color:var(--ok);font-weight:800}
+.seg{display:flex;gap:8px;margin:8px 0}
+.seg button{flex:1;background:var(--field);border:1.5px solid var(--line);border-radius:13px;padding:12px 6px;font-weight:700;color:var(--tx);cursor:pointer;font-size:13px;transition:.15s}
+.seg button.sel{background:var(--pp);color:#fff;border-color:var(--pp)}
+.cta{position:absolute;left:0;right:0;bottom:0;padding:16px 22px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(#ffffff00,#fff 22%)}
+.btn{width:100%;background:var(--pp);color:#fff;border:none;border-radius:15px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 10px 26px rgba(75,42,143,.34);transition:.15s}
+.btn:active{transform:scale(.98)}
+.btn.sec{background:#fff;color:var(--pp);box-shadow:none;border:1.5px solid var(--lav2);margin-top:9px;padding:13px}
+.btn.ghost{background:transparent;color:var(--mut);box-shadow:none;font-weight:700;padding:10px}
+.safe{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--ok);font-size:12px;font-weight:600;margin-top:12px}
+.reassure{background:#f2fbf5;border:1px solid #d4f0dd;border-radius:12px;padding:12px 14px;color:#1a7a45;font-size:13px;display:flex;gap:9px;align-items:flex-start;margin:10px 0}
+
+/* splash */
+.splash{background:linear-gradient(160deg,#5a34a8,#3c2277);color:#fff;align-items:center;justify-content:center;text-align:center;padding:40px}
+.splash .logo{font-size:40px;font-weight:800;letter-spacing:-1px}
+.splash p{color:#d8ccff}
+.otp{display:flex;gap:9px;justify-content:center;margin:14px 0}
+.otp span{width:42px;height:52px;border-radius:12px;background:var(--field);border:1.5px solid var(--line);display:grid;place-items:center;font-size:22px;font-weight:800;color:var(--ink)}
+.otp span.fill{border-color:var(--pp2);background:#fff}
+
+/* eligibility */
+.hero{background:linear-gradient(160deg,#efe9ff,#fbf9ff);border-radius:20px;padding:20px;margin-top:6px;border:1px solid var(--lav2)}
+.step3{display:flex;justify-content:space-between;margin:14px 2px 0;font-size:10.5px;color:var(--mut);text-align:center}
+.step3 div{flex:1}.step3 .o{width:15px;height:15px;border-radius:50%;border:2px solid var(--pp2);margin:0 auto 4px}
+.badge{display:inline-flex;gap:6px;align-items:center;background:#eafff2;color:#12a150;font-weight:700;font-size:12px;padding:5px 11px;border-radius:20px}
+
+/* offer */
+.slider{margin:14px 0 4px}
+.rangewrap{position:relative;height:34px}
+input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--pp2) var(--fill,50%),var(--line) 0);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:5px solid var(--pp2);box-shadow:0 3px 8px rgba(0,0,0,.2);cursor:pointer}
+.minmax{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-top:2px}
+.emi{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.15s}
+.emi.sel{border-color:var(--pp);background:#faf7ff}
+.emi .mo{font-weight:800;color:var(--ink)}
+.emi .rt{font-size:11px;color:var(--mut)}
+.emi .amt{font-weight:800;color:var(--ink);text-align:right}
+.emi .amt small{display:block;font-size:10.5px;color:var(--mut);font-weight:600}
+.fee{background:var(--field);border-radius:14px;padding:6px 14px;margin:12px 0}
+.fee summary{list-style:none;cursor:pointer;padding:10px 0;font-weight:700;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
+.fee summary::-webkit-details-marker{display:none}
+.fee .row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--tx);border-top:1px dashed var(--line)}
+.fee .row.tot{font-weight:800;color:var(--ink)}
+.confetti{font-size:15px}
+.done-wrap{text-align:center;padding:22px 0}
+.tick{width:74px;height:74px;border-radius:50%;background:#eafff2;color:#12a150;display:grid;place-items:center;font-size:38px;margin:6px auto 12px;animation:pop .5s}
+@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@media(max-width:820px){.rail{max-width:330px;text-align:center}.anno{text-align:left}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="rail">
+    <div class="kick">Prototype · redesigned Navi PL</div>
+    <h1>The same loan, without the seams.</h1>
+    <p>A clickable rebuild to the offer page. Watch the annotation change with each screen — every step removes a place users drop off, while keeping what Navi already does well.</p>
+    <div class="anno" id="anno"><div class="t">Start</div><div class="d">Tap through the flow on the right.</div></div>
+    <div class="hint">Fully interactive: the amount slider re-computes EMI and fees live on the offer page.</div>
+    <button class="restart" onclick="go(0)">↺ Restart flow</button>
+  </div>
+
+  <div class="device">
+    <div class="notch"></div>
+    <div class="screen">
+      <!-- 0 SPLASH / LOGIN -->
+      <section class="view on" data-anno="Instant start|Phone number in, OTP auto-read (with a contextual SMS permission — asked here, not upfront). No forms before value.">
+        <div class="sbar" style="color:#fff"><span>9:41</span><span class="r">📶 🔋</span></div>
+        <div class="splash" style="flex:1;display:flex;flex-direction:column">
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center">
+            <div class="logo">navi</div>
+            <p>Cash in 5 mins · Zero paperwork</p>
+          </div>
+          <div style="background:#fff;border-radius:22px;padding:20px;color:var(--tx)">
+            <div style="font-weight:800;color:var(--ink);text-align:left">Enter mobile number</div>
+            <div class="field" style="margin-top:12px"><span class="vl">+91&nbsp;98••• •••27</span></div>
+            <div class="otp"><span class="fill">4</span><span class="fill">1</span><span class="fill">9</span><span class="fill">2</span></div>
+            <div style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:10px">OTP auto-read from SMS</div>
+            <button class="btn" onclick="go(1)">Continue</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 1 ELIGIBILITY -->
+      <section class="view" data-anno="Value first — as a range|A believable band (not a ceiling teaser), shown before any detail is asked. The number is the hook that earns the next tap.">
+        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
+        <div class="appbar"><span class="brand">navi</span></div>
+        <div class="body">
+          <div class="badge">● Pre-approved</div>
+          <div class="hero">
+            <div style="color:var(--mut);font-size:13px">You're likely to get</div>
+            <div class="big" style="white-space:nowrap">₹3L <span style="color:var(--mut);font-weight:700">–</span> ₹5L</div>
+            <div style="color:var(--mut);font-size:12px;margin:-2px 0 2px">≈ ₹3,00,000 – ₹5,00,000, based on your profile</div>
+            <div><span class="pill2">⚡ Cash in 5 mins</span><span class="pill2">📄 Zero paperwork</span></div>
+            <div class="step3">
+              <div><div class="o"></div>See your offer</div>
+              <div><div class="o"></div>Confirm details</div>
+              <div><div class="o"></div>Money in bank</div>
+            </div>
+          </div>
+          <div class="reassure"><span>🔒</span><div>Checking your offer <b>won't affect your credit score.</b></div></div>
+        </div>
+        <div class="cta"><button class="btn" onclick="go(2)">See my exact offer →</button></div>
+      </section>
+
+      <!-- 2 IDENTITY (never typed) -->
+      <section class="view" data-anno="Nothing to type|Navi's live flow makes you type name, DOB and PAN by hand in a webview. Here it's pre-filled from CKYCR/UIDAI by consent — verified, not typed. This is the PAN-prepopulate fix.">
+        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
+        <div class="appbar"><span class="bk" onclick="go(1)">‹</span><span class="brand">navi</span></div>
+        <div class="prog"><i class="done"></i><i></i><i></i></div>
+        <div class="body">
+          <h2>We've already got your details</h2>
+          <p class="lead">Fetched securely from your KYC — nothing to type or upload.</p>
+          <div class="field locked"><div class="grow"><div class="lb">Name</div><div class="vl">Shivam P.</div></div><span class="chk">✓ verified</span></div>
+          <div class="field locked"><div class="grow"><div class="lb">PAN</div><div class="vl">••••• ••2F</div></div><span class="chk">✓ verified</span></div>
+          <div class="field locked"><div class="grow"><div class="lb">Date of birth</div><div class="vl">•• ••• 199•</div></div><span class="chk">✓ verified</span></div>
+          <div class="reassure"><span>🛡️</span><div>Pulled from CKYCR/UIDAI with your consent. <b>Your data is safe.</b> <u>Know more</u></div></div>
+        </div>
+        <div class="cta"><button class="btn" onclick="go(3)">Confirm &amp; continue</button><div class="safe">🔒 256-bit encrypted · RBI-registered NBFC</div></div>
+      </section>
+
+      <!-- 3 WORK DETAILS (minimal) -->
+      <section class="view" data-anno="Minimal ask|Two fields, the way Navi's real 'Work Details' already does it. Kept native — no webview handoff. Reassurance sits right at the point of ask.">
+        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
+        <div class="appbar"><span class="bk" onclick="go(2)">‹</span><span class="brand">navi</span></div>
+        <div class="prog"><i class="done"></i><i class="done"></i><i></i></div>
+        <div class="body">
+          <h2>A couple of quick things</h2>
+          <p class="lead">This sharpens your exact limit and rate.</p>
+          <div class="lb" style="font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:6px">Employment type</div>
+          <div class="seg"><button class="sel">Salaried</button><button>Self-employed</button><button>Other</button></div>
+          <div class="field"><div class="grow"><div class="lb">Monthly income</div><div class="vl">₹ 65,000</div></div>✏️</div>
+          <div class="reassure"><span>🔒</span><div>Your data is safe. <u>Know more</u></div></div>
+        </div>
+        <div class="cta"><button class="btn" onclick="go(4)">Next</button></div>
+      </section>
+
+      <!-- 4 INCOME SOFT-GATE -->
+      <section class="view" data-anno="Defer the heavy ask|Linking a bank sharpens the offer — but it's optional. 'I'll do it later' (borrowed from Fibe) lets users reach an offer now and verify only if they want more.">
+        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
+        <div class="appbar"><span class="bk" onclick="go(3)">‹</span><span class="brand">navi</span></div>
+        <div class="prog"><i class="done"></i><i class="done"></i><i class="done"></i></div>
+        <div class="body">
+          <h2>Want a higher limit?</h2>
+          <p class="lead">Link the bank your salary lands in to unlock your <b>maximum</b> offer. Takes ~30 seconds, via secure Account Aggregator — <b>no netbanking password.</b></p>
+          <div class="field"><div class="grow"><div class="lb">Verify via Account Aggregator</div><div class="vl">Link salary account</div></div><span style="color:var(--pp)">→</span></div>
+          <div class="reassure"><span>✨</span><div>Users who link typically see a <b>higher limit &amp; lower rate.</b></div></div>
+        </div>
+        <div class="cta">
+          <button class="btn" onclick="go(5)">Link &amp; maximise offer</button>
+          <button class="btn sec" onclick="go(5)">I'll do it later — show my offer</button>
+        </div>
+      </section>
+
+      <!-- 5 OFFER PAGE -->
+      <section class="view" data-anno="The offer — with the math shown|Live amount slider recomputes EMI and the full fee breakdown. Transparency Navi already has, made the centrepiece. This is the scope's end: the offer page.">
+        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
+        <div class="appbar"><span class="bk" onclick="go(4)">‹</span><span class="brand">navi</span><span style="margin-left:auto;font-size:12px;color:var(--ok);font-weight:700">● Offer ready</span></div>
+        <div class="body">
+          <div class="badge confetti">🎉 You're approved</div>
+          <h2 style="margin-top:10px">Choose your loan</h2>
+          <div class="slider">
+            <div class="big"><span class="cur">₹</span><span id="amt">2,00,000</span></div>
+            <div class="rangewrap"><input type="range" id="rng" min="10000" max="500000" step="10000" value="200000"></div>
+            <div class="minmax"><span>₹10,000</span><span>Max ₹5,00,000</span></div>
+          </div>
+          <div style="font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 2px;display:flex;justify-content:space-between"><span>Tenure</span><span>EMI (principal + interest)</span></div>
+          <div id="emis"></div>
+          <details class="fee" open>
+            <summary><span>Fee &amp; disbursal</span><span style="color:var(--pp)" id="getamt">₹1,96,050</span></summary>
+            <div class="row"><span>Loan amount</span><span id="f_amt">₹2,00,000</span></div>
+            <div class="row"><span>Processing fee (2%)</span><span id="f_pf">– ₹4,000</span></div>
+            <div class="row"><span>GST on fee (18%)</span><span id="f_gst">– ₹720</span></div>
+            <div class="row tot"><span>You'll receive</span><span id="f_net">₹1,95,280</span></div>
+          </details>
+          <div class="reassure"><span>✅</span><div>No foreclosure charges · no hidden fees. Rate shown is your <b>actual</b> rate.</div></div>
+        </div>
+        <div class="cta"><button class="btn" onclick="go(6)">Accept &amp; get ₹<span id="ctaamt">1,95,280</span></button></div>
+      </section>
+
+      <!-- 6 END (scope marker) -->
+      <section class="view" data-anno="Scope ends at the offer|Everything after this — KYC video, mandate, disbursal — is deliberately out of scope for this teardown.">
+        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
+        <div class="body" style="display:flex;flex-direction:column;justify-content:center">
+          <div class="done-wrap">
+            <div class="tick">✓</div>
+            <h2 style="text-align:center">Offer accepted</h2>
+            <p class="lead" style="text-align:center">This is where the teardown stops — the <b>offer page</b>.<br>Disbursal, e-mandate and video-KYC follow in the live app.</p>
+            <div class="reassure" style="justify-content:center;text-align:left"><span>🧭</span><div>From open to offer: <b>value shown first, identity never typed, income deferred, no webview seam.</b></div></div>
+          </div>
+        </div>
+        <div class="cta"><button class="btn sec" onclick="go(0)">↺ Replay the flow</button></div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const views=[...document.querySelectorAll('.view')];
+const anno=document.getElementById('anno');
+let cur=0;
+function go(i){
+  if(i<0||i>=views.length)return;
+  views[cur].classList.remove('on');views[cur].classList.add('prev');
+  const prev=cur;cur=i;
+  setTimeout(()=>views[prev].classList.remove('prev'),420);
+  views[i].classList.remove('prev');views[i].classList.add('on');
+  const a=(views[i].dataset.anno||'|').split('|');
+  anno.innerHTML='<div class="t">'+a[0]+'</div><div class="d">'+(a[1]||'')+'</div>';
+  views[i].querySelector('.body')?.scrollTo(0,0);
+}
+// live loan math on offer page
+const rng=document.getElementById('rng');
+const fmt=n=>Math.round(n).toLocaleString('en-IN');
+function emiCalc(P,months,annual){const r=annual/12/100;const e=P*r*Math.pow(1+r,months)/(Math.pow(1+r,months)-1);return e;}
+const plans=[{m:12,r:16},{m:24,r:18},{m:36,r:20}];
+function renderOffer(){
+  const P=+rng.value;
+  rng.style.setProperty('--fill',((P-10000)/(500000-10000)*100)+'%');
+  document.getElementById('amt').textContent=fmt(P);
+  const box=document.getElementById('emis');box.innerHTML='';
+  plans.forEach((p,idx)=>{
+    const e=emiCalc(P,p.m,p.r);const tot=e*p.m;const int=tot-P;
+    const div=document.createElement('div');div.className='emi'+(idx===1?' sel':'');
+    div.innerHTML=`<div><div class="mo">${p.m} months</div><div class="rt">${p.r}% p.a.</div></div>
+      <div class="amt">₹${fmt(e)}<small>total int ₹${fmt(int)}</small></div>`;
+    div.onclick=()=>{[...box.children].forEach(c=>c.classList.remove('sel'));div.classList.add('sel')};
+    box.appendChild(div);
+  });
+  const pf=Math.round(P*0.02);const gst=Math.round(pf*0.18);const net=P-pf-gst;
+  document.getElementById('f_amt').textContent='₹'+fmt(P);
+  document.getElementById('f_pf').textContent='– ₹'+fmt(pf);
+  document.getElementById('f_gst').textContent='– ₹'+fmt(gst);
+  document.getElementById('f_net').textContent='₹'+fmt(net);
+  document.getElementById('getamt').textContent='₹'+fmt(net);
+  document.getElementById('ctaamt').textContent=fmt(net);
+}
+rng.addEventListener('input',renderOffer);renderOffer();
+</script>
+</body>
+</html>
