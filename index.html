@@ -134,6 +134,7 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .chev.bad{background:var(--bad-bg);border-color:var(--bad-ln);color:var(--bad);font-weight:600}
 .chev.cut{color:var(--faint);background:#f4f5f7;text-decoration:line-through}
 .chev.soft{border-style:dashed;color:var(--mut)}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
 th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);font-weight:700}
@@ -156,7 +157,22 @@ tr td:last-child{color:var(--mut)}
 .nav button:hover{background:var(--bg2)}
 .pgdots{position:fixed;left:0;right:0;bottom:0;height:3px;background:var(--line2);z-index:49}
 .pgdots i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
-@media(max-width:760px){.slide{padding:30px 22px}.title{font-size:23px}.cover h1{font-size:38px}.lede{font-size:19px}.col.l{border-right:none;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:20px}}
+@media(max-width:760px){
+  .slide{padding:30px 20px}.title{font-size:23px}.cover h1{font-size:38px}.lede{font-size:19px}
+  .col{padding:0}
+  .col.l{border-right:none;border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:22px}
+  .mid{display:none}
+  /* stack screenshot above its commentary so text can't be squeezed off-screen */
+  .shot{flex-direction:column;align-items:flex-start;gap:16px}
+  .phone{width:min(var(--pw,238px),64vw)}
+  /* keep carousel geometry in sync: track must stay exactly 4 slides wide */
+  .car{width:min(var(--pw,242px),64vw);height:calc(min(var(--pw,242px),64vw) * 2.02)}
+  .track{width:calc(min(var(--pw,242px),64vw) * 4)}
+  .cslide{width:min(var(--pw,242px),64vw)}
+  table{font-size:12px;min-width:540px}th,td{padding:9px 8px}
+  .lane{flex-direction:column;align-items:flex-start;gap:8px}
+  .chev+.chev{margin-left:0}.chev+.chev::before{display:none}
+}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important}}
 </style>
 </head>
@@ -449,6 +465,7 @@ tr td:last-child{color:var(--mut)}
         <span class="chev val">Offer</span>
       </div></div>
     </div>
+    <div class="tscroll">
     <table>
       <thead><tr><th style="width:20%">Test</th><th style="width:32%">Change</th><th style="width:24%">Primary metric</th><th>Guardrail — stop if…</th></tr></thead>
       <tbody>
@@ -458,6 +475,7 @@ tr td:last-child{color:var(--mut)}
         <tr><td class="h">Offer layout</td><td>Comparison-first offer variant vs. single plan</td><td>Offer-view → accept, by segment</td><td>Support / confusion tickets rise</td></tr>
       </tbody>
     </table>
+    </div>
   </div>
   <div class="foot"><span><b>Sequencing principle:</b> every screen before the offer should either show value or be strictly required to price risk. Today, three fail that test — and one route is applied to all.</span><span class="pg">08</span></div>
 </section>

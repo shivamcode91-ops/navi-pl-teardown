@@ -216,7 +216,13 @@ details.fee .in{padding:0 14px 12px}
 .summary{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:20px;width:100%;text-align:left}
 .summary .sr{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink2);padding:5px 0}
 .summary .sr .ico{color:var(--good)}
-@media(max-width:880px){.stage{gap:34px}.rail{width:340px;order:2}}
+@media(max-width:880px){
+  body{padding:24px 14px}
+  .stage{gap:30px}
+  .rail{order:2;width:100%;max-width:360px}
+  /* scale the device to the viewport, keeping the 344:712 aspect ratio */
+  .device{width:min(344px,90vw);height:calc(min(344px,90vw) * 2.07)}
+}
 @media(prefers-reduced-motion:reduce){*{transition-duration:.001s!important;animation-duration:.001s!important}}
 </style>
 </head>
