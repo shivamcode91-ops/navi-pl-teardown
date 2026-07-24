@@ -3,302 +3,605 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Navi PL — redesigned flow (prototype)</title>
+<title>Navi PL — redesigned origination flow (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --pp:#4b2a8f;--pp2:#6c4fd6;--pp3:#8b6ff0;--lav:#efeaff;--lav2:#e3d9ff;
-  --ink:#1c1430;--tx:#2b2440;--mut:#7b7391;--line:#ece8f5;--ok:#12a150;--bg:#0e0b18;
-  --card:#fff;--field:#f6f3fd;
+  --ink:#14213d; --ink2:#39445c; --mut:#6c7688; --faint:#9aa3b2;
+  --line:#e4e7ee; --line2:#eef0f5; --bg:#f7f8f5; --field:#f6f7fa;
+  --accent:#5636b8; --accent-bg:#f2eefc; --accent-ln:#e0d6f7;
+  --good:#1f7a5c; --good-bg:#eef6f2; --good-ln:#cfe6db;
+  --amber:#a86811; --amber-bg:#fbf5ea; --amber-ln:#ecdcc0;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:
-  radial-gradient(900px 500px at 82% -8%,#241a3f,#0e0b18) fixed;
-  color:#e7e2f5;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
-  min-height:100vh;display:flex;align-items:center;justify-content:center;gap:52px;flex-wrap:wrap;padding:34px}
-.stage{display:flex;align-items:center;gap:46px;flex-wrap:wrap;justify-content:center}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;letter-spacing:-.005em;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:36px 28px}
+.stage{display:flex;align-items:center;gap:64px;flex-wrap:wrap;justify-content:center;max-width:1080px}
+.ico{width:1em;height:1em;flex:0 0 auto}
 
-/* annotation rail */
-.rail{max-width:330px}
-.rail .kick{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--pp3);font-weight:700;margin-bottom:8px}
-.rail h1{font-size:25px;line-height:1.15;margin:0 0 10px;font-weight:800;letter-spacing:-.3px;color:#fff}
-.rail p{color:#b3aacb;font-size:14px;margin:0 0 18px}
-.anno{background:#191330;border:1px solid #2c2350;border-left:3px solid var(--pp2);border-radius:12px;padding:14px 15px;transition:.25s}
-.anno .t{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--pp3);font-weight:700;margin-bottom:5px}
-.anno .d{color:#d7d0ee;font-size:13.5px}
-.hint{margin-top:16px;font-size:12px;color:#6a6288}
-.restart{margin-top:14px;background:transparent;border:1px solid #3a2f63;color:#b9a7f0;padding:9px 16px;border-radius:10px;font-size:13px;cursor:pointer;font-weight:600}
-.restart:hover{background:#191330}
+/* ---------- annotation rail ---------- */
+.rail{width:340px;flex:0 0 auto}
+.rail .kick{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+  border-top:2px solid var(--accent);padding-top:11px;display:block}
+.rail h1{font-family:"Newsreader",Georgia,serif;font-size:35px;line-height:1.08;font-weight:500;
+  letter-spacing:-.02em;margin:12px 0 12px}
+.rail h1 .em{color:var(--accent)}
+.rail .intro{color:var(--mut);font-size:14px;margin:0 0 22px}
+.anno{background:#fff;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;
+  padding:15px 16px;min-height:132px}
+.anno .ex{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
+.anno .t{font-size:15px;font-weight:700;margin-bottom:5px}
+.anno .d{color:var(--ink2);font-size:13.5px;line-height:1.45}
+.scoreline{display:flex;gap:10px;margin-top:16px}
+.score{flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.score .l{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.score .v{font-size:17px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.score.now .v{color:var(--mut)} .score.new .v{color:var(--good)}
+.rail .foot{margin-top:18px;display:flex;align-items:center;gap:12px}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink2);padding:9px 15px;border-radius:9px;
+  font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-ghost:hover{background:var(--field);border-color:#d3d8e4}
+.rail .note{font-size:11.5px;color:var(--faint)}
 
-/* phone */
-.device{width:330px;height:700px;background:#0a0713;border-radius:44px;padding:11px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 2px #2a2350,inset 0 0 0 2px #000;flex:0 0 auto;position:relative}
-.notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:130px;height:26px;background:#0a0713;border-radius:0 0 18px 18px;z-index:20}
-.screen{position:relative;width:100%;height:100%;background:#fff;border-radius:34px;overflow:hidden;color:var(--tx)}
-.sbar{height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 26px;font-size:12px;font-weight:700;color:var(--ink);flex:0 0 auto}
-.sbar .r{display:flex;gap:5px;align-items:center;font-size:11px}
+/* ---------- device ---------- */
+.device{width:344px;height:712px;background:#0d0d0f;border-radius:42px;padding:7px;flex:0 0 auto;
+  box-shadow:0 26px 60px rgba(20,33,61,.24),0 2px 0 rgba(0,0,0,.3)}
+.screen{position:relative;width:100%;height:100%;background:#fff;border-radius:35px;overflow:hidden;display:flex;flex-direction:column}
+.sbar{height:32px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;font-size:11.5px;font-weight:600;color:var(--ink);z-index:8}
+.sbar .rt{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--ink2)}
+.bars{display:flex;gap:1.5px;align-items:flex-end}
+.bars i{width:2.5px;background:var(--ink);border-radius:1px}
+.bars i:nth-child(1){height:4px}.bars i:nth-child(2){height:6px}.bars i:nth-child(3){height:8px}.bars i:nth-child(4){height:10px}
+.batt{width:19px;height:10px;border:1.2px solid var(--ink2);border-radius:3px;position:relative;padding:1.4px}
+.batt::after{content:"";display:block;height:100%;width:72%;background:var(--ink);border-radius:1px}
+.stack{position:relative;flex:1;overflow:hidden}
 
-/* screen system */
 .view{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;
-  transform:translateX(100%);opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.22,.61,.36,1),opacity .3s}
-.view.on{transform:translateX(0);opacity:1;pointer-events:auto}
-.view.prev{transform:translateX(-24%);opacity:0}
-.body{flex:1;overflow-y:auto;padding:8px 22px 20px}
-.body::-webkit-scrollbar{width:0}
-.appbar{display:flex;align-items:center;gap:12px;padding:6px 20px 2px}
-.appbar .bk{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--pp);cursor:pointer;font-size:19px}
-.brand{font-weight:800;color:var(--pp);letter-spacing:-.3px;font-size:18px}
-.prog{display:flex;gap:5px;padding:8px 22px 2px}
-.prog i{height:4px;border-radius:4px;background:var(--line);flex:1;transition:.3s}
-.prog i.done{background:var(--pp2)}
+  transform:translateX(100%);opacity:0;pointer-events:none;
+  transition:transform .4s cubic-bezier(.32,.72,0,1),opacity .25s}
+.view.on{transform:none;opacity:1;pointer-events:auto}
+.view.back{transform:translateX(-22%);opacity:0}
+.vbody{flex:1;overflow-y:auto;padding:4px 22px 16px;scrollbar-width:none}
+.vbody::-webkit-scrollbar{width:0}
+.vfoot{flex:0 0 auto;padding:12px 22px 20px;background:linear-gradient(rgba(255,255,255,0),#fff 26%)}
 
-h2{font-size:23px;line-height:1.18;margin:14px 0 6px;font-weight:800;letter-spacing:-.3px;color:var(--ink)}
-.lead{color:var(--mut);font-size:14px;margin:0 0 16px}
-.big{font-size:38px;font-weight:800;letter-spacing:-1px;color:var(--ink);margin:4px 0}
-.big .cur{font-size:24px;vertical-align:super;font-weight:700;margin-right:2px}
-.pill2{display:inline-flex;align-items:center;gap:6px;background:var(--lav);color:var(--pp);font-weight:700;font-size:12px;padding:6px 12px;border-radius:20px;margin:3px 6px 3px 0}
-.field{background:var(--field);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:9px 0;display:flex;align-items:center;gap:10px}
-.field .lb{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
-.field .vl{font-size:15px;font-weight:700;color:var(--ink)}
-.field.locked{background:#f2fbf5;border-color:#cdeed8}
-.field .grow{flex:1}
-.chk{color:var(--ok);font-weight:800}
-.seg{display:flex;gap:8px;margin:8px 0}
-.seg button{flex:1;background:var(--field);border:1.5px solid var(--line);border-radius:13px;padding:12px 6px;font-weight:700;color:var(--tx);cursor:pointer;font-size:13px;transition:.15s}
-.seg button.sel{background:var(--pp);color:#fff;border-color:var(--pp)}
-.cta{position:absolute;left:0;right:0;bottom:0;padding:16px 22px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(#ffffff00,#fff 22%)}
-.btn{width:100%;background:var(--pp);color:#fff;border:none;border-radius:15px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 10px 26px rgba(75,42,143,.34);transition:.15s}
-.btn:active{transform:scale(.98)}
-.btn.sec{background:#fff;color:var(--pp);box-shadow:none;border:1.5px solid var(--lav2);margin-top:9px;padding:13px}
-.btn.ghost{background:transparent;color:var(--mut);box-shadow:none;font-weight:700;padding:10px}
-.safe{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--ok);font-size:12px;font-weight:600;margin-top:12px}
-.reassure{background:#f2fbf5;border:1px solid #d4f0dd;border-radius:12px;padding:12px 14px;color:#1a7a45;font-size:13px;display:flex;gap:9px;align-items:flex-start;margin:10px 0}
+.nav{display:flex;align-items:center;gap:10px;padding:2px 20px 0;flex:0 0 auto;min-height:34px}
+.nav .bk{width:28px;height:28px;margin-left:-6px;border-radius:8px;display:grid;place-items:center;
+  color:var(--ink2);cursor:pointer;border:none;background:none}
+.nav .bk:hover{background:var(--field)}
+.brand{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:-.03em}
+.nav .step{margin-left:auto;font-size:10.5px;color:var(--faint);font-weight:600;font-variant-numeric:tabular-nums}
+.pbar{height:3px;background:var(--line2);margin:6px 22px 0;border-radius:3px;overflow:hidden;flex:0 0 auto}
+.pbar i{display:block;height:100%;background:var(--accent);width:0;transition:width .45s cubic-bezier(.32,.72,0,1)}
 
-/* splash */
-.splash{background:linear-gradient(160deg,#5a34a8,#3c2277);color:#fff;align-items:center;justify-content:center;text-align:center;padding:40px}
-.splash .logo{font-size:40px;font-weight:800;letter-spacing:-1px}
-.splash p{color:#d8ccff}
-.otp{display:flex;gap:9px;justify-content:center;margin:14px 0}
-.otp span{width:42px;height:52px;border-radius:12px;background:var(--field);border:1.5px solid var(--line);display:grid;place-items:center;font-size:22px;font-weight:800;color:var(--ink)}
-.otp span.fill{border-color:var(--pp2);background:#fff}
+h2{font-size:22px;line-height:1.16;font-weight:700;letter-spacing:-.02em;margin:16px 0 5px}
+.sub{color:var(--mut);font-size:13.5px;margin:0 0 16px}
+.btn{width:100%;background:var(--ink);color:#fff;border:none;border-radius:13px;padding:15px;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;
+  justify-content:center;gap:8px;transition:transform .12s,background .15s}
+.btn:active{transform:scale(.985)}
+.btn.go{background:var(--good)}
+.btn.sec{background:#fff;color:var(--ink);border:1.5px solid var(--line);margin-top:9px;padding:12px;font-size:14px}
+.btn.sec:hover{background:var(--field)}
+.btn.link{background:none;color:var(--mut);border:none;font-size:13px;font-weight:600;padding:10px;margin-top:2px}
+.btn.link:hover{color:var(--ink)}
+
+.fld{border:1.5px solid var(--line);border-radius:13px;padding:11px 14px;margin:10px 0;background:#fff}
+.fld .l{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.fld .v{font-size:15px;font-weight:600;margin-top:2px}
+.fld.ok{background:var(--good-bg);border-color:var(--good-ln)}
+.fld.row{display:flex;align-items:center;gap:11px}
+.fld.row .gr{flex:1;min-width:0}
+
+.reassure{display:flex;gap:9px;align-items:flex-start;background:var(--good-bg);border:1px solid var(--good-ln);
+  border-radius:11px;padding:11px 13px;font-size:12.5px;color:#1a6b50;margin:12px 0}
+.reassure .ico{color:var(--good);margin-top:1px}
+.reassure b{font-weight:700}
+
+/* OTP */
+.otp{display:flex;gap:9px;margin:10px 0 4px}
+.otp b{flex:1;height:52px;border:1.5px solid var(--line);border-radius:11px;display:grid;place-items:center;
+  font-size:22px;font-weight:700;color:var(--ink);background:#fff;transition:.2s}
+.otp b.f{border-color:var(--accent);background:var(--accent-bg)}
+.hint{font-size:11.5px;color:var(--faint);text-align:center}
 
 /* eligibility */
-.hero{background:linear-gradient(160deg,#efe9ff,#fbf9ff);border-radius:20px;padding:20px;margin-top:6px;border:1px solid var(--lav2)}
-.step3{display:flex;justify-content:space-between;margin:14px 2px 0;font-size:10.5px;color:var(--mut);text-align:center}
-.step3 div{flex:1}.step3 .o{width:15px;height:15px;border-radius:50%;border:2px solid var(--pp2);margin:0 auto 4px}
-.badge{display:inline-flex;gap:6px;align-items:center;background:#eafff2;color:#12a150;font-weight:700;font-size:12px;padding:5px 11px;border-radius:20px}
+.amount{font-size:40px;font-weight:700;letter-spacing:-.035em;margin:2px 0;font-variant-numeric:tabular-nums}
+.amount .cur{font-size:24px;font-weight:600;color:var(--mut);margin-right:1px}
+.rangebox{background:var(--accent-bg);border:1px solid var(--accent-ln);border-radius:15px;padding:17px 18px;margin-top:6px}
+.tagline{font-size:12.5px;color:var(--accent);font-weight:600}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.chip{font-size:11px;font-weight:600;background:#fff;border:1px solid var(--accent-ln);color:var(--accent);
+  border-radius:20px;padding:5px 11px}
+.tracker{display:flex;margin-top:16px;gap:4px}
+.tracker div{flex:1;text-align:center;font-size:9.5px;color:var(--mut);line-height:1.3}
+.tracker .dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--accent);margin:0 auto 5px;background:#fff}
+.tracker div.done .dot{background:var(--accent)}
+
+/* PAN card */
+.pancard{border-radius:14px;padding:15px 16px;background:linear-gradient(135deg,#eaf0fb,#f4f0fb);
+  border:1px solid #d8def0;position:relative;overflow:hidden;margin:4px 0 2px}
+.pancard::before{content:"";position:absolute;top:0;left:0;bottom:0;width:5px;
+  background:linear-gradient(#e8703a,#f4f4f4 50%,#1f7a5c)}
+.pancard .hd{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#65708a;
+  margin-bottom:11px;padding-left:7px}
+.pancard .r{display:flex;justify-content:space-between;font-size:12px;padding:4px 52px 4px 7px}
+.pancard .r span{color:#77839c}
+.pancard .r b{color:#1a2740;font-weight:700;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.pancard .ph{position:absolute;right:14px;bottom:14px;width:38px;height:46px;border-radius:4px;
+  background:#dee3ef;border:1px solid #c9d0e2}
+
+/* consent sheet */
+.scrim{position:absolute;inset:0;background:rgba(20,33,61,.32);opacity:0;pointer-events:none;transition:opacity .3s;z-index:10}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:20px 20px 22px;
+  transform:translateY(102%);transition:transform .42s cubic-bezier(.32,.72,0,1);z-index:11;
+  box-shadow:0 -10px 30px rgba(20,33,61,.16)}
+.sheet.on{transform:none}
+.sheet .grab{width:38px;height:4px;background:var(--line);border-radius:3px;margin:-6px auto 12px}
+.crow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line2);cursor:pointer}
+.crow:first-of-type{border-top:none}
+.crow .cx{flex:1}
+.crow .ct{font-size:13.5px;font-weight:600}
+.crow .cd{font-size:11px;color:var(--mut);margin-top:1px}
+.tog{width:42px;height:25px;border-radius:14px;background:var(--good);position:relative;flex:0 0 auto;transition:background .2s}
+.tog::after{content:"";position:absolute;top:2.5px;left:19.5px;width:20px;height:20px;border-radius:50%;
+  background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog.off{background:#ccd2de}
+.tog.off::after{left:2.5px}
+
+/* route cards */
+.route{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;cursor:pointer;
+  transition:.16s;background:#fff;text-align:left;width:100%;font-family:inherit;display:block}
+.route:hover{border-color:#c6cddc;background:var(--field)}
+.route.rec{border-color:var(--good-ln);background:var(--good-bg)}
+.route.rec:hover{border-color:var(--good)}
+.route .rtop{display:flex;align-items:center;gap:9px}
+.route .rt{font-size:14.5px;font-weight:700}
+.route .badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--good);color:#fff;padding:3px 8px;border-radius:20px}
+.route .rd{font-size:12px;color:var(--mut);margin-top:5px;line-height:1.4}
+.route .rmeta{font-size:11px;font-weight:600;color:var(--good);margin-top:7px;display:flex;align-items:center;gap:5px}
+.route.plain .rmeta{color:var(--mut)}
 
 /* offer */
-.slider{margin:14px 0 4px}
-.rangewrap{position:relative;height:34px}
-input[type=range]{width:100%;-webkit-appearance:none;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--pp2) var(--fill,50%),var(--line) 0);outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:5px solid var(--pp2);box-shadow:0 3px 8px rgba(0,0,0,.2);cursor:pointer}
-.minmax{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);margin-top:2px}
-.emi{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:.15s}
-.emi.sel{border-color:var(--pp);background:#faf7ff}
-.emi .mo{font-weight:800;color:var(--ink)}
-.emi .rt{font-size:11px;color:var(--mut)}
-.emi .amt{font-weight:800;color:var(--ink);text-align:right}
-.emi .amt small{display:block;font-size:10.5px;color:var(--mut);font-weight:600}
-.fee{background:var(--field);border-radius:14px;padding:6px 14px;margin:12px 0}
-.fee summary{list-style:none;cursor:pointer;padding:10px 0;font-weight:700;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
-.fee summary::-webkit-details-marker{display:none}
-.fee .row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;color:var(--tx);border-top:1px dashed var(--line)}
-.fee .row.tot{font-weight:800;color:var(--ink)}
-.confetti{font-size:15px}
-.done-wrap{text-align:center;padding:22px 0}
-.tick{width:74px;height:74px;border-radius:50%;background:#eafff2;color:#12a150;display:grid;place-items:center;font-size:38px;margin:6px auto 12px;animation:pop .5s}
-@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1)}}
-@media(max-width:820px){.rail{max-width:330px;text-align:center}.anno{text-align:left}}
+.slider{margin:4px 0 2px}
+input[type=range]{width:100%;-webkit-appearance:none;background:transparent;margin:8px 0 2px}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:4px;
+  background:linear-gradient(90deg,var(--accent) var(--fill,40%),var(--line) var(--fill,40%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-9px;width:23px;height:23px;
+  border-radius:50%;background:#fff;border:5px solid var(--accent);box-shadow:0 2px 6px rgba(20,33,61,.22);cursor:pointer}
+input[type=range]::-moz-range-track{height:5px;border-radius:4px;background:var(--line)}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#fff;border:5px solid var(--accent);cursor:pointer}
+.mm{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+.thead{display:flex;justify-content:space-between;font-size:9.5px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--faint);margin:16px 0 6px}
+.emi{display:flex;align-items:center;gap:11px;border:1.5px solid var(--line);border-radius:12px;
+  padding:11px 13px;margin:7px 0;cursor:pointer;transition:.16s;background:#fff}
+.emi:hover{border-color:#c6cddc}
+.emi.sel{border-color:var(--accent);background:var(--accent-bg)}
+.emi .radio{width:17px;height:17px;border-radius:50%;border:2px solid #c3cad9;flex:0 0 auto;display:grid;place-items:center}
+.emi.sel .radio{border-color:var(--accent)}
+.emi.sel .radio::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.emi .mo{font-size:13.5px;font-weight:700;white-space:nowrap}
+.emi .rate{font-size:10.5px;color:var(--mut);white-space:nowrap}
+.emi .rr{margin-left:auto;text-align:right;flex:0 0 auto}
+.emi .val{font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.emi .split{display:block;font-size:9.5px;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:1px}
+details.fee{border:1.5px solid var(--line);border-radius:13px;margin:14px 0 0;background:var(--field);overflow:hidden}
+details.fee summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;
+  font-size:13.5px;font-weight:700}
+details.fee summary::-webkit-details-marker{display:none}
+details.fee summary .amt{margin-left:auto;color:var(--accent);font-variant-numeric:tabular-nums}
+details.fee .in{padding:0 14px 12px}
+.frow{display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-top:1px dashed var(--line);
+  color:var(--ink2);font-variant-numeric:tabular-nums}
+.frow.tot{font-weight:700;color:var(--ink)}
+.pillrow{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:var(--good);
+  background:var(--good-bg);border:1px solid var(--good-ln);border-radius:20px;padding:6px 11px;
+  width:fit-content;margin-bottom:4px}
+
+/* done */
+.done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.tickwrap{width:74px;height:74px;border-radius:50%;background:var(--good-bg);border:2px solid var(--good-ln);
+  display:grid;place-items:center;color:var(--good);margin-bottom:18px;animation:pop .45s cubic-bezier(.2,1.3,.4,1)}
+.tickwrap svg{width:34px;height:34px}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.summary{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:20px;width:100%;text-align:left}
+.summary .sr{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink2);padding:5px 0}
+.summary .sr .ico{color:var(--good)}
+@media(max-width:880px){.stage{gap:34px}.rail{width:340px;order:2}}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.001s!important;animation-duration:.001s!important}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-arw" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-bk" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M15 18l-6-6 6-6"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3l8 3v6c0 5-3.4 8.6-8 11-4.6-2.4-8-6-8-11V6l8-3z"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 8l8 5 8-5"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M12 3l9 5H3l9-5zM6 10v8M10 10v8M14 10v8M18 10v8M3 21h18"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></symbol>
+</defs></svg>
+
 <div class="stage">
+  <!-- ================= RAIL ================= -->
   <div class="rail">
-    <div class="kick">Prototype · redesigned Navi PL</div>
-    <h1>The same loan, without the seams.</h1>
-    <p>A clickable rebuild to the offer page. Watch the annotation change with each screen — every step removes a place users drop off, while keeping what Navi already does well.</p>
-    <div class="anno" id="anno"><div class="t">Start</div><div class="d">Tap through the flow on the right.</div></div>
-    <div class="hint">Fully interactive: the amount slider re-computes EMI and fees live on the offer page.</div>
-    <button class="restart" onclick="go(0)">↺ Restart flow</button>
-  </div>
-
-  <div class="device">
-    <div class="notch"></div>
-    <div class="screen">
-      <!-- 0 SPLASH / LOGIN -->
-      <section class="view on" data-anno="Instant start|Phone number in, OTP auto-read (with a contextual SMS permission — asked here, not upfront). No forms before value.">
-        <div class="sbar" style="color:#fff"><span>9:41</span><span class="r">📶 🔋</span></div>
-        <div class="splash" style="flex:1;display:flex;flex-direction:column">
-          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center">
-            <div class="logo">navi</div>
-            <p>Cash in 5 mins · Zero paperwork</p>
-          </div>
-          <div style="background:#fff;border-radius:22px;padding:20px;color:var(--tx)">
-            <div style="font-weight:800;color:var(--ink);text-align:left">Enter mobile number</div>
-            <div class="field" style="margin-top:12px"><span class="vl">+91&nbsp;98••• •••27</span></div>
-            <div class="otp"><span class="fill">4</span><span class="fill">1</span><span class="fill">9</span><span class="fill">2</span></div>
-            <div style="font-size:11px;color:var(--mut);text-align:center;margin-bottom:10px">OTP auto-read from SMS</div>
-            <button class="btn" onclick="go(1)">Continue</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- 1 ELIGIBILITY -->
-      <section class="view" data-anno="Value first — as a range|A believable band (not a ceiling teaser), shown before any detail is asked. The number is the hook that earns the next tap.">
-        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
-        <div class="appbar"><span class="brand">navi</span></div>
-        <div class="body">
-          <div class="badge">● Pre-approved</div>
-          <div class="hero">
-            <div style="color:var(--mut);font-size:13px">You're likely to get</div>
-            <div class="big" style="white-space:nowrap">₹3L <span style="color:var(--mut);font-weight:700">–</span> ₹5L</div>
-            <div style="color:var(--mut);font-size:12px;margin:-2px 0 2px">≈ ₹3,00,000 – ₹5,00,000, based on your profile</div>
-            <div><span class="pill2">⚡ Cash in 5 mins</span><span class="pill2">📄 Zero paperwork</span></div>
-            <div class="step3">
-              <div><div class="o"></div>See your offer</div>
-              <div><div class="o"></div>Confirm details</div>
-              <div><div class="o"></div>Money in bank</div>
-            </div>
-          </div>
-          <div class="reassure"><span>🔒</span><div>Checking your offer <b>won't affect your credit score.</b></div></div>
-        </div>
-        <div class="cta"><button class="btn" onclick="go(2)">See my exact offer →</button></div>
-      </section>
-
-      <!-- 2 IDENTITY (never typed) -->
-      <section class="view" data-anno="Nothing to type|Navi's live flow makes you type name, DOB and PAN by hand in a webview. Here it's pre-filled from CKYCR/UIDAI by consent — verified, not typed. This is the PAN-prepopulate fix.">
-        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
-        <div class="appbar"><span class="bk" onclick="go(1)">‹</span><span class="brand">navi</span></div>
-        <div class="prog"><i class="done"></i><i></i><i></i></div>
-        <div class="body">
-          <h2>We've already got your details</h2>
-          <p class="lead">Fetched securely from your KYC — nothing to type or upload.</p>
-          <div class="field locked"><div class="grow"><div class="lb">Name</div><div class="vl">Shivam P.</div></div><span class="chk">✓ verified</span></div>
-          <div class="field locked"><div class="grow"><div class="lb">PAN</div><div class="vl">••••• ••2F</div></div><span class="chk">✓ verified</span></div>
-          <div class="field locked"><div class="grow"><div class="lb">Date of birth</div><div class="vl">•• ••• 199•</div></div><span class="chk">✓ verified</span></div>
-          <div class="reassure"><span>🛡️</span><div>Pulled from CKYCR/UIDAI with your consent. <b>Your data is safe.</b> <u>Know more</u></div></div>
-        </div>
-        <div class="cta"><button class="btn" onclick="go(3)">Confirm &amp; continue</button><div class="safe">🔒 256-bit encrypted · RBI-registered NBFC</div></div>
-      </section>
-
-      <!-- 3 WORK DETAILS (minimal) -->
-      <section class="view" data-anno="Minimal ask|Two fields, the way Navi's real 'Work Details' already does it. Kept native — no webview handoff. Reassurance sits right at the point of ask.">
-        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
-        <div class="appbar"><span class="bk" onclick="go(2)">‹</span><span class="brand">navi</span></div>
-        <div class="prog"><i class="done"></i><i class="done"></i><i></i></div>
-        <div class="body">
-          <h2>A couple of quick things</h2>
-          <p class="lead">This sharpens your exact limit and rate.</p>
-          <div class="lb" style="font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:6px">Employment type</div>
-          <div class="seg"><button class="sel">Salaried</button><button>Self-employed</button><button>Other</button></div>
-          <div class="field"><div class="grow"><div class="lb">Monthly income</div><div class="vl">₹ 65,000</div></div>✏️</div>
-          <div class="reassure"><span>🔒</span><div>Your data is safe. <u>Know more</u></div></div>
-        </div>
-        <div class="cta"><button class="btn" onclick="go(4)">Next</button></div>
-      </section>
-
-      <!-- 4 INCOME SOFT-GATE -->
-      <section class="view" data-anno="Defer the heavy ask|Linking a bank sharpens the offer — but it's optional. 'I'll do it later' (borrowed from Fibe) lets users reach an offer now and verify only if they want more.">
-        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
-        <div class="appbar"><span class="bk" onclick="go(3)">‹</span><span class="brand">navi</span></div>
-        <div class="prog"><i class="done"></i><i class="done"></i><i class="done"></i></div>
-        <div class="body">
-          <h2>Want a higher limit?</h2>
-          <p class="lead">Link the bank your salary lands in to unlock your <b>maximum</b> offer. Takes ~30 seconds, via secure Account Aggregator — <b>no netbanking password.</b></p>
-          <div class="field"><div class="grow"><div class="lb">Verify via Account Aggregator</div><div class="vl">Link salary account</div></div><span style="color:var(--pp)">→</span></div>
-          <div class="reassure"><span>✨</span><div>Users who link typically see a <b>higher limit &amp; lower rate.</b></div></div>
-        </div>
-        <div class="cta">
-          <button class="btn" onclick="go(5)">Link &amp; maximise offer</button>
-          <button class="btn sec" onclick="go(5)">I'll do it later — show my offer</button>
-        </div>
-      </section>
-
-      <!-- 5 OFFER PAGE -->
-      <section class="view" data-anno="The offer — with the math shown|Live amount slider recomputes EMI and the full fee breakdown. Transparency Navi already has, made the centrepiece. This is the scope's end: the offer page.">
-        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
-        <div class="appbar"><span class="bk" onclick="go(4)">‹</span><span class="brand">navi</span><span style="margin-left:auto;font-size:12px;color:var(--ok);font-weight:700">● Offer ready</span></div>
-        <div class="body">
-          <div class="badge confetti">🎉 You're approved</div>
-          <h2 style="margin-top:10px">Choose your loan</h2>
-          <div class="slider">
-            <div class="big"><span class="cur">₹</span><span id="amt">2,00,000</span></div>
-            <div class="rangewrap"><input type="range" id="rng" min="10000" max="500000" step="10000" value="200000"></div>
-            <div class="minmax"><span>₹10,000</span><span>Max ₹5,00,000</span></div>
-          </div>
-          <div style="font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 2px;display:flex;justify-content:space-between"><span>Tenure</span><span>EMI (principal + interest)</span></div>
-          <div id="emis"></div>
-          <details class="fee" open>
-            <summary><span>Fee &amp; disbursal</span><span style="color:var(--pp)" id="getamt">₹1,96,050</span></summary>
-            <div class="row"><span>Loan amount</span><span id="f_amt">₹2,00,000</span></div>
-            <div class="row"><span>Processing fee (2%)</span><span id="f_pf">– ₹4,000</span></div>
-            <div class="row"><span>GST on fee (18%)</span><span id="f_gst">– ₹720</span></div>
-            <div class="row tot"><span>You'll receive</span><span id="f_net">₹1,95,280</span></div>
-          </details>
-          <div class="reassure"><span>✅</span><div>No foreclosure charges · no hidden fees. Rate shown is your <b>actual</b> rate.</div></div>
-        </div>
-        <div class="cta"><button class="btn" onclick="go(6)">Accept &amp; get ₹<span id="ctaamt">1,95,280</span></button></div>
-      </section>
-
-      <!-- 6 END (scope marker) -->
-      <section class="view" data-anno="Scope ends at the offer|Everything after this — KYC video, mandate, disbursal — is deliberately out of scope for this teardown.">
-        <div class="sbar"><span>9:41</span><span class="r">📶 🔋</span></div>
-        <div class="body" style="display:flex;flex-direction:column;justify-content:center">
-          <div class="done-wrap">
-            <div class="tick">✓</div>
-            <h2 style="text-align:center">Offer accepted</h2>
-            <p class="lead" style="text-align:center">This is where the teardown stops — the <b>offer page</b>.<br>Disbursal, e-mandate and video-KYC follow in the live app.</p>
-            <div class="reassure" style="justify-content:center;text-align:left"><span>🧭</span><div>From open to offer: <b>value shown first, identity never typed, income deferred, no webview seam.</b></div></div>
-          </div>
-        </div>
-        <div class="cta"><button class="btn sec" onclick="go(0)">↺ Replay the flow</button></div>
-      </section>
-
+    <span class="kick">Prototype · redesigned Navi PL</span>
+    <h1>The same loan,<br>without the <span class="em">seams</span>.</h1>
+    <p class="intro">A clickable rebuild to the offer page. Every screen removes one friction point from the teardown — the annotation tracks which.</p>
+    <div class="anno" id="anno">
+      <div class="ex" id="anno-ex">Start</div>
+      <div class="t" id="anno-t">Tap through the flow</div>
+      <div class="d" id="anno-d">The prototype is fully interactive: consent toggles, the income route you pick, and the amount slider all change what the offer page shows.</div>
+    </div>
+    <div class="scoreline">
+      <div class="score now"><div class="l">Navi today</div><div class="v">11 screens</div></div>
+      <div class="score new"><div class="l">This flow</div><div class="v" id="sc-new">6 screens</div></div>
+    </div>
+    <div class="foot">
+      <button class="btn-ghost" onclick="reset()">Restart flow</button>
+      <span class="note">Fields typed: <b id="typed">0</b></span>
     </div>
   </div>
+
+  <!-- ================= DEVICE ================= -->
+  <div class="device"><div class="screen">
+    <div class="sbar">
+      <span>9:41</span>
+      <span class="rt"><span class="bars"><i></i><i></i><i></i><i></i></span><span class="batt"></span></span>
+    </div>
+    <div class="stack" id="stack">
+
+      <!-- 0 · LOGIN -->
+      <section class="view on" id="v0" data-ex="Entry" data-t="Start with the minimum"
+        data-d="One field. No permissions wall, no browser hand-off — the two things Navi asks for before showing anything.">
+        <div class="nav"><span class="brand">navi</span></div>
+        <div class="vbody">
+          <h2>Get cash in 5 minutes</h2>
+          <p class="sub">Enter your mobile number to see what you're eligible for.</p>
+          <div class="fld"><div class="l">Mobile number</div><div class="v">+91 98••• ••27</div></div>
+          <div class="reassure"><svg class="ico"><use href="#i-shield"/></svg>
+            <div>Checking your eligibility <b>won't affect your credit score.</b></div></div>
+        </div>
+        <div class="vfoot"><button class="btn" onclick="go(1)">Get OTP<svg class="ico"><use href="#i-arw"/></svg></button></div>
+      </section>
+
+      <!-- 1 · OTP + CONSENT (Exhibit 2) -->
+      <section class="view" id="v1" data-ex="Exhibit 2 · Consent"
+        data-t="Consent at the OTP moment"
+        data-d="The user has just committed by entering an OTP — the highest-intent moment in the funnel. Ask here, in plain language, instead of at a cold &quot;all permissions are mandatory&quot; wall.">
+        <div class="nav"><button class="bk" onclick="go(0)"><svg class="ico"><use href="#i-bk"/></svg></button><span class="brand">navi</span><span class="step">Step 1 of 5</span></div>
+        <div class="pbar"><i style="width:20%"></i></div>
+        <div class="vbody">
+          <h2>Verify your number</h2>
+          <p class="sub">We sent a 4-digit code to +91 98••• ••27.</p>
+          <div class="otp" id="otpbox"><b></b><b></b><b></b><b></b></div>
+          <p class="hint" id="otphint">Auto-reading from SMS…</p>
+        </div>
+        <div class="vfoot"><button class="btn" id="otpbtn" onclick="openSheet()" disabled style="opacity:.45">Verifying…</button></div>
+      </section>
+
+      <!-- 2 · ELIGIBILITY (honest range) -->
+      <section class="view" id="v2" data-ex="Exhibit 3 · The anchor"
+        data-t="An honest range, not the ceiling"
+        data-d="Navi leads with ₹20,00,000 — a number almost no one gets. A believable band sets an expectation the final offer can actually meet, protecting acceptance.">
+        <div class="nav"><span class="brand">navi</span><span class="step">Step 2 of 5</span></div>
+        <div class="pbar"><i style="width:40%"></i></div>
+        <div class="vbody">
+          <div class="pillrow"><svg class="ico"><use href="#i-check"/></svg> Pre-approved</div>
+          <div class="rangebox">
+            <div class="tagline">You're likely to get</div>
+            <div class="amount"><span class="cur">₹</span>3,00,000 – 5,00,000</div>
+            <div class="chips"><span class="chip">Cash in 5 mins</span><span class="chip">No paperwork</span><span class="chip">No collateral</span></div>
+            <div class="tracker">
+              <div class="done"><div class="dot"></div>See your offer</div>
+              <div><div class="dot"></div>Confirm details</div>
+              <div><div class="dot"></div>Money in bank</div>
+            </div>
+          </div>
+          <div class="reassure"><svg class="ico"><use href="#i-shield"/></svg>
+            <div>Your exact limit and rate are confirmed on the next two screens.</div></div>
+        </div>
+        <div class="vfoot"><button class="btn" onclick="go(3)">See my exact offer<svg class="ico"><use href="#i-arw"/></svg></button></div>
+      </section>
+
+      <!-- 3 · PAN CONFIRM (Exhibit 1) -->
+      <section class="view" id="v3" data-ex="Exhibit 1 · Identity"
+        data-t="Confirm the PAN — don't type it"
+        data-d="Navi makes you hand-type name, DOB and PAN in a webview. The CKYCR consent is already given, so the data can be fetched and shown back as a card: one tap, zero fields, no typo dead-ends.">
+        <div class="nav"><button class="bk" onclick="go(2)"><svg class="ico"><use href="#i-bk"/></svg></button><span class="brand">navi</span><span class="step">Step 3 of 5</span></div>
+        <div class="pbar"><i style="width:60%"></i></div>
+        <div class="vbody">
+          <h2>Is this your PAN?</h2>
+          <p class="sub">Fetched securely from CKYCR with the consent you just gave.</p>
+          <div class="pancard">
+            <div class="hd">Income Tax Department · Govt of India</div>
+            <div class="r"><span>Name</span><b>SHIVAM PURBE</b></div>
+            <div class="r"><span>PAN</span><b>ABCP••••2F</b></div>
+            <div class="r"><span>Date of birth</span><b>••/••/199•</b></div>
+            <div class="ph"></div>
+          </div>
+          <div class="reassure"><svg class="ico"><use href="#i-check"/></svg>
+            <div><b>Nothing to type.</b> Name, PAN and date of birth are already verified against your KYC.</div></div>
+        </div>
+        <div class="vfoot">
+          <button class="btn go" onclick="go(4)">Yes, that's me<svg class="ico"><use href="#i-check"/></svg></button>
+          <button class="btn sec" onclick="go(4)">Not me — enter manually</button>
+        </div>
+      </section>
+
+      <!-- 4 · ROUTE (Exhibit 3) -->
+      <section class="view" id="v4" data-ex="Exhibit 3 · Underwriting routes"
+        data-t="Route by employer, don't force one path"
+        data-d="Today every applicant runs the Account-Aggregator + bank-statement pull. A verifiable Cat-A employer can be cleared with a work-email OTP instead — the cheapest path for the lowest-risk users. Thin files step up to AA.">
+        <div class="nav"><button class="bk" onclick="go(3)"><svg class="ico"><use href="#i-bk"/></svg></button><span class="brand">navi</span><span class="step">Step 4 of 5</span></div>
+        <div class="pbar"><i style="width:80%"></i></div>
+        <div class="vbody">
+          <h2>How should we confirm your income?</h2>
+          <p class="sub">We detected a known employer, so you can skip the bank statement.</p>
+          <button class="route rec" onclick="pick('email')">
+            <div class="rtop"><svg class="ico" style="color:var(--good);width:18px;height:18px"><use href="#i-mail"/></svg>
+              <span class="rt">Verify work email</span><span class="badge">Fastest</span></div>
+            <div class="rd">One OTP to your official email. No bank statement, no Account Aggregator.</div>
+            <div class="rmeta"><svg class="ico" style="width:13px;height:13px"><use href="#i-bolt"/></svg> ~30 seconds · limit up to ₹5,00,000</div>
+          </button>
+          <button class="route" onclick="pick('bank')">
+            <div class="rtop"><svg class="ico" style="color:var(--accent);width:18px;height:18px"><use href="#i-bank"/></svg>
+              <span class="rt">Link salary account</span></div>
+            <div class="rd">Secure Account Aggregator — no netbanking password. Unlocks our best rate.</div>
+            <div class="rmeta">~2 minutes · best rate, limit up to ₹5,00,000</div>
+          </button>
+          <button class="route plain" onclick="pick('later')">
+            <div class="rtop"><span class="rt">I'll do it later</span></div>
+            <div class="rd">See an indicative offer now and verify income when you're ready.</div>
+            <div class="rmeta">Instant · lower limit until verified</div>
+          </button>
+        </div>
+      </section>
+
+      <!-- 5 · VERIFY (branch) -->
+      <section class="view" id="v5" data-ex="Exhibit 3 · Underwriting routes"
+        data-t="The lightest sufficient check"
+        data-d="Verification scales with risk instead of applying the heaviest pull to everyone. Notice the offer on the next screen changes limit and rate depending on the route you chose — that's risk-based pricing made visible.">
+        <div class="nav"><button class="bk" onclick="go(4)"><svg class="ico"><use href="#i-bk"/></svg></button><span class="brand">navi</span><span class="step">Step 5 of 5</span></div>
+        <div class="pbar"><i style="width:92%"></i></div>
+        <div class="vbody" id="v5body"><!-- injected --></div>
+        <div class="vfoot"><button class="btn go" id="v5btn" onclick="go(6)">Continue<svg class="ico"><use href="#i-arw"/></svg></button></div>
+      </section>
+
+      <!-- 6 · OFFER (Exhibit 4) -->
+      <section class="view" id="v6" data-ex="Exhibit 4 · The offer screen"
+        data-t="Show the whole comparison, and the maths"
+        data-d="Every tenure side by side with EMI split into principal and interest (Moneyview's strength), plus Navi's own fee breakdown carried through. The slider recomputes both live — nothing about the cost is hidden until later.">
+        <div class="nav"><button class="bk" onclick="go(4)"><svg class="ico"><use href="#i-bk"/></svg></button><span class="brand">navi</span><span class="step">Offer</span></div>
+        <div class="pbar"><i style="width:100%"></i></div>
+        <div class="vbody">
+          <div class="pillrow" id="routebadge"><svg class="ico"><use href="#i-check"/></svg> Approved</div>
+          <h2 style="margin-top:10px">Choose your loan</h2>
+          <div class="slider">
+            <div class="amount"><span class="cur">₹</span><span id="amt">2,00,000</span></div>
+            <input type="range" id="rng" min="10000" max="500000" step="10000" value="200000" aria-label="Loan amount">
+            <div class="mm"><span>₹10,000</span><span id="mx">Max ₹5,00,000</span></div>
+          </div>
+          <div class="thead"><span>Tenure · reducing balance</span><span>EMI (principal + interest)</span></div>
+          <div id="emis"></div>
+          <details class="fee" open>
+            <summary>Fees &amp; what you receive<span class="amt" id="net-sum">₹1,95,280</span></summary>
+            <div class="in">
+              <div class="frow"><span>Loan amount</span><span id="f-amt">₹2,00,000</span></div>
+              <div class="frow"><span>Processing fee (2%)</span><span id="f-pf">− ₹4,000</span></div>
+              <div class="frow"><span>GST on fee (18%)</span><span id="f-gst">− ₹720</span></div>
+              <div class="frow tot"><span>Credited to your bank</span><span id="f-net">₹1,95,280</span></div>
+              <div class="frow" style="border-top:1px solid var(--line)"><span>Total interest over term</span><span id="f-int">₹39,636</span></div>
+            </div>
+          </details>
+          <div class="reassure"><svg class="ico"><use href="#i-check"/></svg>
+            <div><b>No foreclosure charges.</b> The rate shown is your actual rate, not a starting-from figure.</div></div>
+        </div>
+        <div class="vfoot"><button class="btn go" onclick="go(7)">Accept &amp; get ₹<span id="cta-amt">1,95,280</span></button></div>
+      </section>
+
+      <!-- 7 · DONE -->
+      <section class="view" id="v7" data-ex="Scope"
+        data-t="The teardown stops at the offer"
+        data-d="Everything after this — e-mandate, video KYC, disbursal — is deliberately out of scope. Six screens to a confirmable offer instead of eleven, with nothing typed by hand.">
+        <div class="done">
+          <div class="tickwrap"><svg viewBox="0 0 24 24"><use href="#i-check"/></svg></div>
+          <h2 style="margin:0">Offer accepted</h2>
+          <p class="sub" style="margin-top:6px">Disbursal, e-mandate and video KYC follow in the live app — out of scope for this teardown.</p>
+          <div class="summary">
+            <div class="sr"><svg class="ico"><use href="#i-check"/></svg> Identity confirmed, never typed</div>
+            <div class="sr"><svg class="ico"><use href="#i-check"/></svg> Consent taken at the OTP moment</div>
+            <div class="sr"><svg class="ico"><use href="#i-check"/></svg> Verification matched to risk, not forced</div>
+            <div class="sr"><svg class="ico"><use href="#i-check"/></svg> Full cost shown before commitment</div>
+          </div>
+          <button class="btn sec" style="margin-top:20px" onclick="reset()">Replay the flow</button>
+        </div>
+      </section>
+
+      <!-- consent sheet overlay -->
+      <div class="scrim" id="scrim" onclick="closeSheet()"></div>
+      <div class="sheet" id="sheet">
+        <div class="grab"></div>
+        <h2 style="margin:0 0 3px;font-size:19px">A couple of quick allows</h2>
+        <p class="sub" style="margin-bottom:6px">So your loan sets itself up. You can change these any time.</p>
+        <div class="crow" onclick="toggle(this)"><div class="cx">
+          <div class="ct">Auto-read your OTPs</div><div class="cd">So you never switch to Messages</div></div>
+          <div class="tog"></div></div>
+        <div class="crow" onclick="toggle(this)"><div class="cx">
+          <div class="ct">Confirm your city</div><div class="cd">To show the offers available to you</div></div>
+          <div class="tog"></div></div>
+        <div class="crow" onclick="toggle(this)"><div class="cx">
+          <div class="ct">Keep your account secure</div><div class="cd">Standard checks to protect your loan</div></div>
+          <div class="tog"></div></div>
+        <button class="btn" style="margin-top:16px" onclick="acceptConsent()">Continue</button>
+        <button class="btn link" onclick="acceptConsent()">Not now</button>
+      </div>
+
+    </div>
+  </div></div>
 </div>
 
 <script>
-const views=[...document.querySelectorAll('.view')];
-const anno=document.getElementById('anno');
+/* ---------- state ---------- */
+const ROUTES={
+  email:{label:'Work email verified · Cat A',max:500000,rates:{12:15.5,24:17.5,36:19.5}},
+  bank :{label:'Salary account verified · best rate',max:500000,rates:{12:14.5,24:16.5,36:18.5}},
+  later:{label:'Indicative offer · income not verified',max:150000,rates:{12:18,24:20,36:22}}
+};
+const state={route:'email',amount:200000,tenure:24};
 let cur=0;
-function go(i){
-  if(i<0||i>=views.length)return;
-  views[cur].classList.remove('on');views[cur].classList.add('prev');
-  const prev=cur;cur=i;
-  setTimeout(()=>views[prev].classList.remove('prev'),420);
-  views[i].classList.remove('prev');views[i].classList.add('on');
-  const a=(views[i].dataset.anno||'|').split('|');
-  anno.innerHTML='<div class="t">'+a[0]+'</div><div class="d">'+(a[1]||'')+'</div>';
-  views[i].querySelector('.body')?.scrollTo(0,0);
+
+/* ---------- navigation ---------- */
+const views=[...document.querySelectorAll('.view')];
+function go(n){
+  if(n===cur) return;
+  const from=views[cur], to=views[n];
+  from.classList.remove('on');
+  if(n>cur) from.classList.add('back');
+  setTimeout(()=>from.classList.remove('back'),420);
+  to.classList.add('on');
+  to.querySelector('.vbody')?.scrollTo(0,0);
+  cur=n;
+  const ex=to.dataset.ex||'', t=to.dataset.t||'', d=to.dataset.d||'';
+  document.getElementById('anno-ex').textContent=ex;
+  document.getElementById('anno-t').textContent=t;
+  document.getElementById('anno-d').textContent=d;
+  if(n===1) runOtp();
+  if(n===6) renderOffer();
 }
-// live loan math on offer page
-const rng=document.getElementById('rng');
+function reset(){
+  document.getElementById('sheet').classList.remove('on');
+  document.getElementById('scrim').classList.remove('on');
+  document.querySelectorAll('#otpbox b').forEach(b=>{b.textContent='';b.classList.remove('f')});
+  const btn=document.getElementById('otpbtn'); btn.disabled=true; btn.style.opacity='.45'; btn.textContent='Verifying…';
+  document.getElementById('otphint').textContent='Auto-reading from SMS…';
+  state.route='email'; state.amount=200000; state.tenure=24;
+  document.getElementById('rng').value=200000;
+  document.getElementById('sc-new').textContent='6 screens';
+  go(0);
+}
+
+/* ---------- OTP auto-read (Exhibit 2) ---------- */
+let otpTimers=[];
+function runOtp(){
+  otpTimers.forEach(clearTimeout); otpTimers=[];
+  const cells=[...document.querySelectorAll('#otpbox b')], code='4192';
+  cells.forEach(c=>{c.textContent='';c.classList.remove('f')});
+  cells.forEach((c,i)=>otpTimers.push(setTimeout(()=>{
+    c.textContent=code[i]; c.classList.add('f');
+  },320+i*230)));
+  otpTimers.push(setTimeout(()=>{
+    document.getElementById('otphint').textContent='Verified — securing your session';
+    const b=document.getElementById('otpbtn');
+    b.disabled=false; b.style.opacity='1'; b.textContent='Continue';
+    openSheet();
+  },1500));
+}
+
+/* ---------- consent sheet ---------- */
+function openSheet(){
+  document.getElementById('scrim').classList.add('on');
+  document.getElementById('sheet').classList.add('on');
+}
+function closeSheet(){
+  document.getElementById('scrim').classList.remove('on');
+  document.getElementById('sheet').classList.remove('on');
+}
+function toggle(row){ row.querySelector('.tog').classList.toggle('off'); }
+function acceptConsent(){ closeSheet(); setTimeout(()=>go(2),260); }
+
+/* ---------- route branch (Exhibit 3) ---------- */
+const V5={
+  email:{h:'Verify your work email',s:'We\'ll send a one-time code to your official address.',
+    body:`<div class="fld row"><svg class="ico" style="color:var(--accent);width:19px;height:19px"><use href="#i-mail"/></svg>
+            <div class="gr"><div class="l">Work email</div><div class="v">shivam@&lt;employer&gt;.com</div></div></div>
+          <div class="otp"><b class="f">7</b><b class="f">3</b><b class="f">0</b><b class="f">6</b></div>
+          <div class="fld ok row"><div class="gr"><div class="l">Employer check</div>
+            <div class="v" style="color:var(--good)">Verified · Category A</div></div>
+            <svg class="ico" style="color:var(--good);width:19px;height:19px"><use href="#i-check"/></svg></div>
+          <div class="reassure"><svg class="ico"><use href="#i-check"/></svg><div>
+            <b>No bank statement needed.</b> Your employer is on our verified list, so we priced you off that.</div></div>`,
+    btn:'See my offer'},
+  bank:{h:'Link your salary account',s:'Via RBI-regulated Account Aggregator — we never see your password.',
+    body:`<div class="fld row"><svg class="ico" style="color:var(--accent);width:19px;height:19px"><use href="#i-bank"/></svg>
+            <div class="gr"><div class="l">Selected account</div><div class="v">Union Bank ••••0293</div></div></div>
+          <div class="fld ok row"><div class="gr"><div class="l">Consent</div>
+            <div class="v" style="color:var(--good)">Granted · 1-time, 6-month data</div></div>
+            <svg class="ico" style="color:var(--good);width:19px;height:19px"><use href="#i-check"/></svg></div>
+          <div class="reassure"><svg class="ico"><use href="#i-shield"/></svg><div>
+            <b>Read-only and revocable.</b> One OTP, one account pick — and it unlocks our best rate.</div></div>`,
+    btn:'See my best offer'},
+  later:{h:'Here\'s your indicative offer',s:'Based on your bureau file alone — no income verified yet.',
+    body:`<div class="fld row"><div class="gr"><div class="l">Income verification</div>
+            <div class="v" style="color:var(--amber)">Skipped for now</div></div></div>
+          <div class="reassure" style="background:var(--amber-bg);border-color:var(--amber-ln);color:#8a5510">
+            <svg class="ico" style="color:var(--amber)"><use href="#i-shield"/></svg><div>
+            <b>Limit capped at ₹1,50,000</b> until income is verified. You can raise it any time — the offer stays live for 30 days.</div></div>`,
+    btn:'See my indicative offer'}
+};
+function pick(r){
+  state.route=r;
+  const c=V5[r];
+  document.getElementById('v5body').innerHTML=`<h2>${c.h}</h2><p class="sub">${c.s}</p>${c.body}`;
+  document.getElementById('v5btn').innerHTML=c.btn+' <svg class="ico"><use href="#i-arw"/></svg>';
+  document.getElementById('sc-new').textContent=(r==='later'?'5 screens':'6 screens');
+  const max=ROUTES[r].max;
+  if(state.amount>max) state.amount=max;
+  go(5);
+}
+
+/* ---------- offer maths (Exhibit 4) ---------- */
 const fmt=n=>Math.round(n).toLocaleString('en-IN');
-function emiCalc(P,months,annual){const r=annual/12/100;const e=P*r*Math.pow(1+r,months)/(Math.pow(1+r,months)-1);return e;}
-const plans=[{m:12,r:16},{m:24,r:18},{m:36,r:20}];
-function renderOffer(){
-  const P=+rng.value;
-  rng.style.setProperty('--fill',((P-10000)/(500000-10000)*100)+'%');
-  document.getElementById('amt').textContent=fmt(P);
-  const box=document.getElementById('emis');box.innerHTML='';
-  plans.forEach((p,idx)=>{
-    const e=emiCalc(P,p.m,p.r);const tot=e*p.m;const int=tot-P;
-    const div=document.createElement('div');div.className='emi'+(idx===1?' sel':'');
-    div.innerHTML=`<div><div class="mo">${p.m} months</div><div class="rt">${p.r}% p.a.</div></div>
-      <div class="amt">₹${fmt(e)}<small>total int ₹${fmt(int)}</small></div>`;
-    div.onclick=()=>{[...box.children].forEach(c=>c.classList.remove('sel'));div.classList.add('sel')};
-    box.appendChild(div);
-  });
-  const pf=Math.round(P*0.02);const gst=Math.round(pf*0.18);const net=P-pf-gst;
-  document.getElementById('f_amt').textContent='₹'+fmt(P);
-  document.getElementById('f_pf').textContent='– ₹'+fmt(pf);
-  document.getElementById('f_gst').textContent='– ₹'+fmt(gst);
-  document.getElementById('f_net').textContent='₹'+fmt(net);
-  document.getElementById('getamt').textContent='₹'+fmt(net);
-  document.getElementById('ctaamt').textContent=fmt(net);
+function emiOf(P,months,annual){
+  const r=annual/12/100;
+  return P*r*Math.pow(1+r,months)/(Math.pow(1+r,months)-1);
 }
-rng.addEventListener('input',renderOffer);renderOffer();
+function renderOffer(){
+  const cfg=ROUTES[state.route], rng=document.getElementById('rng');
+  rng.max=cfg.max;
+  if(+rng.value>cfg.max) rng.value=cfg.max;
+  state.amount=+rng.value;
+  document.getElementById('mx').textContent='Max ₹'+fmt(cfg.max);
+  document.getElementById('routebadge').innerHTML=
+    '<svg class="ico"><use href="#i-check"/></svg> '+cfg.label;
+  paint();
+}
+function paint(){
+  const cfg=ROUTES[state.route], P=state.amount, rng=document.getElementById('rng');
+  rng.style.setProperty('--fill',((P-10000)/(cfg.max-10000)*100)+'%');
+  document.getElementById('amt').textContent=fmt(P);
+  const box=document.getElementById('emis'); box.innerHTML='';
+  Object.keys(cfg.rates).map(Number).forEach(m=>{
+    const rate=cfg.rates[m], e=emiOf(P,m,rate), int=e*m-P;
+    const el=document.createElement('div');
+    el.className='emi'+(m===state.tenure?' sel':'');
+    el.innerHTML=`<span class="radio"></span>
+      <span><span class="mo">${m} months</span><br><span class="rate">${rate}% p.a.</span></span>
+      <span class="rr"><span class="val">₹${fmt(e)}</span>
+      <span class="split">₹${fmt(P/m)} + ₹${fmt(int/m)} int</span></span>`;
+    el.onclick=()=>{state.tenure=m;paint()};
+    box.appendChild(el);
+  });
+  const pf=Math.round(P*.02), gst=Math.round(pf*.18), net=P-pf-gst;
+  const e=emiOf(P,state.tenure,cfg.rates[state.tenure]), totInt=e*state.tenure-P;
+  document.getElementById('f-amt').textContent='₹'+fmt(P);
+  document.getElementById('f-pf').textContent='− ₹'+fmt(pf);
+  document.getElementById('f-gst').textContent='− ₹'+fmt(gst);
+  document.getElementById('f-net').textContent='₹'+fmt(net);
+  document.getElementById('f-int').textContent='₹'+fmt(totInt);
+  document.getElementById('net-sum').textContent='₹'+fmt(net);
+  document.getElementById('cta-amt').textContent=fmt(net);
+}
+document.getElementById('rng').addEventListener('input',e=>{state.amount=+e.target.value;paint()});
+paint();
 </script>
 </body>
 </html>
